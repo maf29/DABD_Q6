@@ -1,0 +1,12 @@
+CREATE TABLE movies(nom text, anyo INT, director TEXT, puntuacio INT);
+
+INSERT INTO movies VALUES('Eyes Wide Shut',1999, 'Stanley Kubrick', 0);
+INSERT INTO movies VALUES('Fear Desire',1953, 'Stanley Kubrick', 1);
+INSERT INTO movies VALUES('Death Proof',2007, 'Quentin Tarantino', 5);
+INSERT INTO movies VALUES('Jackie Brown',1997, 'Quentin Tarantino', 6);
+
+select * from movies order by director;		//per obtenir totes les pel·l´ıcules ordenades per director ascendent
+
+
+psql -U est_b7533039 est_b7533039 < accounts.sql 		//Importar
+pg_dump -U est_b7533039 est_b7533039 -t movies > movies.sql  //exportar

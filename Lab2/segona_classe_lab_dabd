@@ -1,0 +1,109 @@
+**********************
+*Consultes exemple 2:*
+**********************
+
+.header on :aixi sabem cada columna q es
+
+Titular que t´e el major saldo sumant tots els seus comptes (´es
+el 6435323 amb 17351.02 eur)-> 
+
+-->Sumar nombre de tots els comptes bancaris
+select owner_id, sum(balance) from accounts group by owner_id; 
+
+-->Ordenem de gran a petit:
+select owner_id, sum(balance) total from accounts group by owner_id order by total desc; 
+
+-->Conseguir la persona mes rica, que es la primera:
+select owner_id, sum(balance) total from accounts group by owner_id order by total desc limit 1;
+
+-->Alternativa:
+select owner_id, max(total) from (select owner_id, sum(balance) total from accounts group by owner_id);
+
+------------------------------------------------------------------
+I Titular que t´e el menor saldo sumant tots els seus comptes (´es
+el 6152436 amb 687.78 eur)
+
+-->Ordenem de petit a gran:
+select owner_id, sum(balance) total from accounts group by owner_id order by total limit 1;
+
+------------------------------------------------------------------
+I Saldo total i saldo mig de tots els comptes del banc arrodonit
+a 2 decimals (106118.38 eur i 2210.80 eur respectivament)
+
+-->Suma total i la mitja:
+select sum(balance), avg(balance) total from accounts;
+
+-->Arrodonir a dos decimals:
+select sum(balance), round(avg(balance),2) total from accounts;
+
+-->Treure els comptes repetits, es posa els comptes, pq hi ha propietaris que tenen comptes repetits:
+select sum(balance), round(avg(balance),2) total from (select distinct acc_id, balance from accounts);
+
+------------------------------------------------------------------
+I DNI de tots els titulars, sense repeticions, amb el n´umero de
+comptes que t´e cada titular
+
+-->Nombre de comptes que te cada titular:
+select owner_id, count() from accounts group by owner_id;
+
+------------------------------------------------------------------
+I Llistat amb el n´umero de titulars amb un compte, n´umero de
+titulars amb dos comptes, ... (Ha de donar 1—8, 2—4, 3—10, 4—1, 6—1, 7—1)
+
+-->Agrupar i contar els comptes:
+select nc, count() from(select owner_id, count() nc from accounts group by owner_id) group by nc;
+
+------------------------------------------------------------------
+I Comptes, sense repeticions, amb el n´umero de titulars que t´e
+cada compte.
+
+------------------------------------------------------------------
+I Llistat amb el n´umero de comptes amb un titular, n´umero de
+comptes amb dos titulars, ... (Ha de donar 1—33, 2—15)
+
+------------------------------------------------------------------
+Incementa amb 100 eur d’interessos el saldo dels comptes de
+tipus ”L”.
+
+--> update accounts set balance = balance + 100 where type='L';
+
+------------------------------------------------------------------
+Intercanvia els tipus ”L” i ”C” de tots els comptes.
+
+--> Fer intercanvi, sino que es quede el tipus que es:
+update accounts set type = case
+	when type='L' then 'C'
+	when type='C' then 'L'
+	else type
+	end;
+
+------------------------------------------------------------------
+Al titular que tingui el major saldo sumant tots els seus
+comptes del banc li regalem un nou compte de tipus ’C’ amb
+un saldo de 300 eur. El n´umero del compte nou el calcularem
+incrementant el n´umero del compte m´es gran de tot el banc.
+
+-->Per saber el nombre compte mes gran i sumarli 1 per al nou compte:
+select max(acc_id)+1 from accounts;
+
+-->Saber els parametres que hi ha per fer insert:
+select *, max(b) from (select *, sum(balance) as b from accounts group by owner_id);
+
+-->Fer insert:
+insert into accounts select (select max(acc_id) from accounts+1, 'C', 300, owner, owner_id, phone, address from)
+
+------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,32 @@
+ACTIVIDAD
+
+SELECT COUNT(distinct code) from aprovats;
+select district, count(distinct code) from aprovat group by district;
+SELECT strftime('%Y',pdate) AS y,count(*) from aprovat group by y;	//alumnos que han aprobado asignatruras cada año
+SELECT strftime('%Y',pdate) AS y,count(distinct(code)) from aprovat group by y;	//alumnos que han aprobado ALGUNA asignatrura es decir que no se reputa el codigo de estudiante, si ha aprobado minimo una sube al contador +1
+
+SELECT DISTINCT a1.name, a2.name FROM aprovat a1, aprovat a2 WHERE a1.name < a2.name AND a1.city == a2.city;  //pareja de estudiantes diferenctes que viven en la misma ciudad
+== -> =
+!= -> <>
+
+
+************PYTHON*************
+-h, show this help message and exit
+-i, create the table
+-a, add new pairs to table
+-d, delete an user
+-l, list all users
+-s, show queries
+
+Comentarios : --
+
+import sqlite3 	//Libreria que deja conectar con la base de datos
+sqlite3.connect("users.db") 	//para abrir conexion | indicar->  host port usuario contraseña db_name?
+
+.init -->crea tabla
+.add --> inserta en la tabla 
+
+para capar y evitar que me metan palabras que puedan cargar la db, lo que hace es en vez de poner '%s' pasa un placeholder ?
+
+
+import psycopg2

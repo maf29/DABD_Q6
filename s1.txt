@@ -1,0 +1,300 @@
+>>CREACIO I INSERCIO DE TAULA<<
+	#Nom columna TIPUS
+	
+	sqlite> CREATE TABLE assignatures (codi char(4),name TEXT, matriculats INT);
+	
+	#assignatures2(codi,name,matriculats) En aquest ordre s'emmagatzemara les dades que escribim a
+	#Values.
+	
+	sqlite> INSERT INTO assignatures(codi,name,matriculats) VALUES ("DABD", "Disseny i Administracio de Base de Dades",35);
+
+	#Ara per veure si s'han guardat com volguem les dades, fem un select global i el veiem
+	
+		sqlite> SELECT * FROM assignatures
+			DABD|Disseny i Administracio de Base de Dades|35
+			
+	#Afegim mes columnes i veiem:
+		sqlite> INSERT INTO assignatures VALUES ("XAMU", "XARXES MULTIMEDIA",25);
+		sqlite> SELECT * FROM assignatures;
+			DABD|Disseny i Administracio de Base de Dades|35
+			XAMU|XARXES MULTIMEDIA|25
+	
+	#Per veure les bases de dades que tenim al directori
+		sqlite> .databases
+	#Per canviar el separador estetic
+		sqlite> .separator ,
+	
+////////////////////////////////////PAGINA 2////////////////////////////////////////////////////////
+
+#Create table
+sqlite> CREATE TABLE accounts (acc_id INT, type CHAR(1),balance REAL, owner TEXT, owner_id INT, phone INT,address TEXT);
+
+#Fem l'insersio
+sqlite> .import accounts.txt accounts 
+
+#Veiem les dades
+sqlite> SELECT * FROM accounts 
+161320011440|P|1763.68|Tomé Cecial|6463525|223242|Camino de Criptana 2, Argamasilla
+161320011440|P|1763.68|Sancho Panza|6532345|222333|Corrales s/n, Argamasilla
+111930116980|C|1564.27|Álvaro Tarfe|6112452|334455|Avellaneda 2, Granada
+134300219657|C|1438.91|Sancho de Azpetia|5645342|313233|Caserío Los Sanchos, Zubiarri
+101790319782|L|1915.02|Roque Guinart|6812345|555453|Camí dels Lladres s/n, Oristà
+		(.....)
+		
+	////////////////////  sqlite3 accounts2.db  \\\\\\\\\\\\\\\\\\\\\
+#.read accounts.sql
+
+////////////////////////////////////PAGINA 3////////////////////////////////////////////////////////
+
+#DNI SENSE REPETICIONS
+sqlite> SELECT DISTINCT owner_id FROM accounts;
+6463525
+6532345
+6112452
+5645342
+6812345
+6123456
+6543234
+6435323
+6788765
+6425312
+6554632
+6546561
+6564321
+6677345
+6336262
+(...)
+
+#DNI de GASPAR GREGORIO
+sqlite> SELECT owner_id FROM accounts WHERE owner="Gaspar Gregorio";
+6546561
+
+#Comptes amb mes de 1000€
+sqlite> SELECT acc_id FROM accounts WHERE balance>1000;
+161320011440
+161320011440
+111930116980
+134300219657
+101790319782
+101790319782
+139840414160
+128490611458
+198270715673
+198440815239
+198440815239
+185121112058
+(...)
+
+#Comptes NO TIPUS "L"
+sqlite> SELECT acc_id FROM accounts WHERE type != "L";
+161320011440
+161320011440
+111930116980
+134300219657
+139840414160
+108210513275
+198270715673
+198440815239
+198440815239
+104310914895
+190341014619
+190341014619
+185121112058
+122191313119
+(...)
+
+#Suma de tots els saldos disponibles
+sqlite> SELECT owner_id, SUM(balance) FROM accounts group by owner_id;
+4455336|11624.81
+5463524|1243.68
+5645342|4139.06
+6112452|2845.01
+6123456|6755.86
+6152436|687.78
+6336262|5054.1
+6425312|1680.24
+6435323|17351.02
+6463525|1763.68
+6466543|3610.06
+6532345|3906.93
+6543234|6825.24
+6546561|1271.18
+6551234|1642.59
+6554632|11181.61
+6564321|10626.97
+6656223|12054.76
+6677345|14124.52
+6783456|1155.01
+6788723|1212.5
+6788765|4502.25
+6812345|2361.47
+6871254|5418.3
+6873413|8041.15
+sqlite> 
+
+
+#NOM I TLF sin repeticiones donde el DNI sea el de ALONSO quijano
+sqlite> SELECT * FROM accounts WHERE owner_id=6543234;
+139840414160|C|2088.97|Alonso Quijano|6543234|213243|Mayor 8, Argamasilla
+147311412572|L|2140.72|Caballero de la Triste Figura|6543234|213243|Mayor 8, Argamasilla
+181473116846|L|152.57|Caballero de la Triste Figura|6543234|213243|Mayor 8, Argamasilla
+185503612858|L|2442.98|Caballero de la Triste Figura|6543234|213243|Mayor 8, Argamasilla
+sqlite> SELECT DISTINCT owner FROM accounts WHERE owner_id=(SELECT owner_id FROM accounts WHERE owner="Alonso Quijano");
+Alonso Quijano
+Caballero de la Triste Figura
+sqlite> SELECT DISTINCT owner,phone FROM accounts WHERE owner_id=(SELECT owner_id FROM accounts WHERE owner="Alonso Quijano" LIMIT 1);
+Alonso Quijano|213243
+Caballero de la Triste Figura|213243
+sqlite> 
+
+#Parells de noms de la mateixa persona, identificada per DNI,sense repeticions (complicadeta, caldrà
+#fer joins. 5 tuples).
+
+sqlite> SELECT DISTINCT a1.owner,a2.owner FROM accounts a1, accounts a2 WHERE a1.owner < a2.owner AND a1.owner_id == a2.owner_id;
+Alonso Quijano|Caballero de la Triste Figura
+Caballero de los Espejos|Sansón Carrasco
+Caballero del Verde Gabán|Diego de Miranda
+Caballero de la Blanca Luna|Caballero de los Espejos
+Caballero de la Blanca Luna|Sansón Carrasco
+sqlite>
+
+
+
+#Compta amb màxim balance
+sqlite> SELECT acc_id,MAX(balance) FROM accounts 
+   ...> ;
+119774916201|9818.59
+sqlite> 
+
+#Compta amb minim balance
+sqlite> SELECT acc_id,MIN(balance) FROM accounts;
+171174310952|28.89
+sqlite> 
+
+#Comencen amb "caballero de" sense repetir.
+sqlite> SELECT DISTINCT owner FROM accounts WHERE owner LIKE "Caballero de%";
+Caballero de los Espejos
+Caballero del Verde Gabán
+Caballero de la Triste Figura
+Caballero de la Blanca Luna
+sqlite> 
+	COLOCAMOS % DEPENDIENDO DE HACIA DONDE QUEREMOS QUE MIRE LA CADENA.(%S,S%,%S%,...)
+
+#Titular amb saldo maxim sumant totes les comptes
+
+sqlite> SELECT owner FROM accounts GROUP BY owner_id ORDER BY SUM(balance) DESC LIMIT 1;
+Caballero de los Espejos
+sqlite> SELECT owner,SUM(balance) as value FROM accounts GROUP BY owner_id ORDER BY value DESC LIMIT 1;
+Caballero de los Espejos|17351.02
+sqlite> 
+
+#Titular amb saldo minim sumant totes les comptes
+
+sqlite> SELECT owner,SUM(balance) as value FROM accounts GROUP BY owner_id ORDER BY value  LIMIT 1;
+María Tornes|687.78
+sqlite> SELECT owner FROM accounts GROUP BY owner_id ORDER BY SUM(balance)  LIMIT 1;
+María Tornes
+sqlite> 
+
+#Suma total del banc, tenir en compte que les comptes poden estar repetits(compartirts).
+>>Total.
+sqlite> SELECT SUM(balance) FROM (SELECT * FROM accounts GROUP BY acc_id);
+106118.38
+sqlite> 
+>>Average.
+sqlite> SELECT ROUND(AVG(balance),2) FROM (SELECT * FROM accounts GROUP BY acc_id) ;
+2210.8
+sqlite> 
+
+##DNI amb el numero de comptes (pe. 1234567---5)
+sqlite> SELECT DISTINCT owner_id,COUNT(acc_id) FROM accounts GROUP BY owner_id ORDER BY owner_id;
+
+#Llistat amb el número de titulars amb un compte, número de
+#titulars amb dos comptes, ... (Ha de donar 1—8, 2—4,
+#3—10, 4—1, 6—1, 7—1)
+
+sqlite> SELECT owner_id,COUNT(owner_id) AS x FROM accounts GROUP BY owner_id ORDER by x ;
+owner_id|x
+5463524|1
+6152436|1
+6425312|1
+6463525|1
+6546561|1
+6551234|1
+6783456|1
+6788723|1
+6112452|2
+6564321|2
+6656223|2
+6812345|2
+4455336|3
+5645342|3
+6123456|3
+6336262|3
+6466543|3
+6532345|3
+6554632|3
+6788765|3
+6871254|3
+6873413|3
+6543234|4
+6677345|6
+6435323|7
+
+EVOLUTION::::
+sqlite> SELECT x,COUNT(x) FROM (SELECT owner_id,COUNT(owner_id) AS x FROM accounts GROUP BY owner_id ORDER by x) GROUP BY x;
+x|COUNT(x)
+1|8
+2|4
+3|10
+4|1
+6|1
+7|1
+sqlite> 
+
+#Comptes, sense repeticions, amb el número de titulars que té
+#cada compte.
+SELECT acc_id,COUNT(acc_id) AS x FROM accounts GROUP BY acc_id ORDER by x;
+
+#I Llistat amb el número de comptes amb un titular, número de
+#comptes amb dos titulars, ... (Ha de donar 1—33, 2—15)
+#Mateixa idea que abans.
+sqlite> SELECT x,COUNT(x) FROM (SELECT acc_id,COUNT(acc_id) AS x FROM accounts GROUP BY acc_id ORDER by x) GROUP BY x;
+x|COUNT(x)
+1|33
+2|15
+sqlite> 
+	En el count se puede poner vacio tal que asi:
+	SELECT x,COUNT() FROM (SELECT acc_id,COUNT() AS x FROM accounts GROUP BY acc_id ORDER by x) GROUP BY x;
+
+#Incrementa amb 100€ el saldo dels comptes de tipus L
+101790319782|L|1915.02|Roque Guinart|6812345|555453|Camí dels Lladres s/n, Oristà
+101790319782|L|1915.02|Juan Haldudo|6123456|253647|Plaza del Ayuntamiento 3, Quintanar
+
+UPDATE accounts SET balance = balance + 100 WHERE type="L"
+
+101790319782|L|2015.02|Roque Guinart|6812345|555453|Camí dels Lladres s/n, Oristà
+101790319782|L|2015.02|Juan Haldudo|6123456|253647|Plaza del Ayuntamiento 3, Quintana
+
+
+#Intercanvia:
+	Amb un CASE, per fer canvis amb una queri.
+	Triple queri.
+	UPDATE accounts SET type = CASE
+				WHEN type='L' THEN type='C'
+				WHEN type='C' THEN type='L'
+				ELSE type
+				END;
+__________________________________________________
+	UPDATE accounts SET type = CASE
+				WHEN type='L' THEN type='C'
+				WHEN type='C' THEN type='L'
+				END;
+				WHERE type=L OR type=c
+__________________________________________________
+
+select(select(max(acc_id)+1) from accounts), 'C',300,(SELECT owner_id,owmner,address,phone.......)
+
+__________________________________________________
+
+select distinct acc_id,type,balance from accounts

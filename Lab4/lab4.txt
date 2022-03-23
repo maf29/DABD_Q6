@@ -1,0 +1,34 @@
+
+quantes taules visibles s’anomenen ’accounts’:
+	select count(*) from information_schema.tables where table_name='accounts';
+
+quantes columnes s´on de qualsevol varietat de tipus ’int’
+	select count(*) from columns where column_type like '%int';		// El % cualquier cosa antes de int ej bigint
+	//La siguiente comanda es para agrupar por tipos y decirnos cuantos int tenemos y cuandos bigint,...
+	select column_type,count(*) from columns where column_type like '%int' group by column_type;
+
+I quantes columnes s´on de qualsevol varietat de tipus ’char’
+	select count(*) from columns where column_type like '%char%';
+	select column_type,count(*) from columns where column_type like '%char%' group by column_type;
+	
+I quantes vistes hi ha
+	select count(*) from VIEWS;
+
+
+Para dar permisos de database en pst:
+	GRANT ALL PRIVILEGES ON movies TO est_d9427261;					//Para darle permisos solo a movies
+	GRANT ALL PRIVILEGES ON database est_b7533039 TO est_d9427261;		//Darle permiso a toda mi basadate 
+	grant connect on database est_b7533039 to est_d9427261;			//Darle permido para que se conecte a mi database
+
+??
+	revoke select on movies from est_b7533039;
+
+Solo hacer visible los campos anyo, director y puntuacio:
+	grant select(anyo,director,puntuacio) ON movies TO est_b7533039;
+
+Normalización ---------------------------------------------------------------------------------------	
+\u est_b7533039
+create table comptes(acc_id bigint primary key not null, type char(1) not null, balance real not null);
+create table titulars(owner_id int primary key not null, address varchar(100) references addressa);
+create table addressa(address varchar(100) primary key not null, phone int not null unique);
+create table contracte(owner varchar(40) not null, acc_id bigint not null references comptes, owner_id int references titulars, primary key(acc_int, owner_id));

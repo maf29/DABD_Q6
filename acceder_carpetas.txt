@@ -1,0 +1,16 @@
+sudo su
+scp b7533039@ahto.epsevg.upc.edu:/home/public/dabd/02accounts/accounts.txt /mnt/c/Users/UX431F/Desktop/DABD/Lab1
+
+sqlite:
+	sqlite
+
+
+ssh b7533039@ubiwan.epsevg.upc.edu
+
+mysql -u est_b7533039 -p							//conectar mysql
+ubiwan > mysql -u est_b7533039 -p est_b7533039 < accounts.sql    //importar base de datos
+
+ubiwan > psql -U est_b7533039 est_b7533039
+
+
+para conectarte a otra data base d eotra persona : \c est_d9427261

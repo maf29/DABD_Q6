@@ -1,0 +1,113 @@
+Has de respondre dins d'aquest mateix fitxer .txt, posant la teva resposta
+sota de cada pregunta, excepte la pregunta 3) que la respondràs adjuntant la
+b.d. sqlite3 amb les taules normalitzades. Aquest és un fitxer de text sense
+format, edita'l només amb un editor de text pla.
+
+Considerem que venem productes a clients mitjançant una única relació, amb els
+següents atributs:
+
+* Codi del producte
+* Nom del producte
+* Preu de cost del producte
+* NIF del client
+* Nom del client
+* Ciutat on està ubicat el client
+* Número de la venda
+* Data de la venda
+* Quantitat de producte que s'ha venut
+* Preu a que s'ha venut l'unitat de producte
+
+Els clients es distingeixen pel seu NIF, les ciutats pel seu nom, els
+productes pel seu codi i les vendes pel seu número. Una mateixa venda pot
+tenir varis productes venuts. Un producte no pot aparèixer a la mateixa
+venda dues vegades.
+
+
+1) Crea les queries que responguin les següents preguntes (una sola query per
+cada pregunta).
+
+Per import venut s'entén el preu venut per unitat multiplicat per la
+quantitat venuda.
+
+Per benefici s'entén la diferència entre el preu venut menys el preu de
+cost multiplicada per la quantitat venuda.
+
+1.a) Número de vendes de cada client
+
+SELECT cname, count(distint num) FROM sales GROUP BY cname;
+
+*********************************************************************************************************
+1.b) Llistat de les ciutats ordenades per la data de la darrera venda emesa, de la més actual a la més antiga
+SELECT DISTINCT city, idate FROM sales ORDER BY idate DESC;
+
+*********************************************************************************************************
+1.c) Alguna de les vendes que té més productes?
+SELECT num, count(qty) FROM sales ORDER BY qty DESC LIMIT 5;
+
+*********************************************************************************************************
+1.d) Els dos clients amb major import de vendes
+SELECT cname, SUM(qty*price) AS import FROM SALES GROUP BY cname ORDER BY import DESC LIMIT 2;
+
+*********************************************************************************************************
+1.e) Import de vendes per cada any-mes
+SELECT SUM(price*qty), strftime('%Y-%m', idate) AS data FROM sales GROUP BY data;
+
+*********************************************************************************************************
+1.f) Benefici total obtingut per cada producte 
+SELECT pname, SUM((price-cost_price)*qty) AS benef FROM sales GROUP BY pname ORDER BY benef DESC;
+
+#########################################################################################################
+
+2) Quines dependències funcionals (D.F.) té el problema? Usa els mateixos noms d'atributs que els que apareixen a la taula.
+
+cliente: nif->cname,city
+producto: code->pname, cost_price
+contrato: num->nif
+negocio: num,code->idate,qty,price
+
+#########################################################################################################
+
+3) A partir de les D.F. anteriors, crea les taules adequades per tal que
+estiguin normalitzades en 3FN. Recorda de definir les claus primàries,
+alternatives i foranes, les polítiques ON DELETE i ON UPDATE de les claus
+foranes i si els atributs són NOT NULL.
+
+CREATE TABLE cliente(nif char(8) NOT NULL PRIMARY KEY, cname varchar(50) NOT NULL, city varchar(50) NOT NULL);
+
+CREATE TABLE producto(code  char(13) NOT NULL PRIMARY KEY, pname varchar(50) NOT NULL, cost_price decimal(8, 2) NOT NULL);
+
+CREATE TABLE contrato(num char(7) NOT NULL PRIMARY KEY, nif char(8) NOT NULL, FOREIGN KEY(nif) REFERENCES cliente(nif) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE negocio(num char(7) NOT NULL, code  char(13) NOT NULL,idate date NOT NULL, qty decimal(2) NOT NULL, price decimal(8, 2) NOT NULL,FOREIGN KEY(num) REFERENCES contrato(num) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY(code) REFERENCES producto(code) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY(num, code));
+
+#########################################################################################################
+
+4) Trasllada les dades de la taula original a les taules normalitzades. Quines
+queries has fet?
+
+INSERT INTO cliente SELECT DISTINCT nif,cname,city FROM sales;
+INSERT INTO producto SELECT DISTINCT code, pname,cost_price FROM sales;
+INSERT INTO contrato SELECT DISTINCT num, nif FROM sales;
+INSERT INTO negocio SELECT DISTINCT num,code,idate,qty,price FROM sales;
+
+#########################################################################################################
+
+5) Resol les mateixes queries de l'apartat 1) sobre les taules normalitzades.
+5.a)Número de vendes de cada client
+SELECT cname, count(pname) FROM (SELECT a4.cname, a1.pname FROM producto a1, negocio a2, contrato a3, cliente a4 WHERE a1.code=a2.code AND a2.num=a3.num AND a3.nif=a4.nif) GROUP BY cname;	
+//esta mal, es un count(distinct num)
+
+5.b)Llistat de les ciutats ordenades per la data de la darrera venda emesa, de la més actual a la més antiga
+SELECT DISTINCT city, idate FROM (SELECT a1.city, a3.idate FROM cliente a1, contrato a2, negocio a3 WHERE a1.nif=a2.nif AND a2.num=a3.num) ORDER BY idate DESC;
+
+5.c)Alguna de les vendes que té més productes?
+SELECT num, qty FROM negocio ORDER BY qty DESC LIMIT 5;
+
+5.d) Els dos clients amb major import de vendes
+SELECT a1.cname, a3.price*a3.qty AS import FROM cliente a1, contrato a2, negocio a3 WHERE a1.nif=a2.nif AND a2.num=a3.num ORDER BY import DESC LIMIT 2;
+
+5.e)Import de vendes per cada any-mes
+SELECT SUM(price*qty), strftime('%Y-%m', idate) AS data FROM negocio GROUP BY data;
+
+5.f)Benefici total obtingut per cada producte
+SELECT a1.pname, SUM((a2.price-a1.cost_price)*a2.qty) AS benef FROM producto a1, negocio a2 WHERE a1.code=a2.code GROUP BY pname ORDER BY benef DESC;

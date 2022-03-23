@@ -1,0 +1,63 @@
+Has de respondre dins d'aquest mateix fitxer .txt, posant la teva resposta
+sota de cada pregunta, excepte la pregunta 3) que la respondràs adjuntant la
+b.d. sqlite3 amb les taules normalitzades. Aquest és un fitxer de text sense
+format, edita'l només amb un editor de text pla.
+
+Considerem que venem productes a clients mitjançant una única relació, amb els
+següents atributs:
+
+* Codi del producte
+* Nom del producte
+* Preu de cost del producte
+* NIF del client
+* Nom del client
+* Ciutat on està ubicat el client
+* Número de la venda
+* Data de la venda
+* Quantitat de producte que s'ha venut
+* Preu a que s'ha venut l'unitat de producte
+
+Els clients es distingeixen pel seu NIF, les ciutats pel seu nom, els
+productes pel seu codi i les vendes pel seu número. Una mateixa venda pot
+tenir varis productes venuts. Un producte no pot aparèixer a la mateixa
+venda dues vegades.
+
+
+1) Crea les queries que responguin les següents preguntes (una sola query per
+cada pregunta).
+
+Per import venut s'entén el preu venut per unitat multiplicat per la
+quantitat venuda.
+
+Per benefici s'entén la diferència entre el preu venut menys el preu de
+cost multiplicada per la quantitat venuda.
+
+1.a) Número de vendes de cada client
+1.b) Llistat de les ciutats ordenades per la data de la darrera venda emesa, de la més actual a la més antiga
+1.c) Alguna de les vendes que té més productes?
+1.d) Els dos clients amb major import de vendes
+1.e) Import de vendes per cada any-mes
+1.f) Benefici total obtingut per cada producte 
+
+
+2) Quines dependències funcionals (D.F.) té el problema? Usa els mateixos noms
+d'atributs que els que apareixen a la taula.
+
+
+3) A partir de les D.F. anteriors, crea les taules adequades per tal que
+estiguin normalitzades en 3FN. Recorda de definir les claus primàries,
+alternatives i foranes, les polítiques ON DELETE i ON UPDATE de les claus
+foranes i si els atributs són NOT NULL.
+
+
+4) Trasllada les dades de la taula original a les taules normalitzades. Quines
+queries has fet?
+
+
+5) Resol les mateixes queries de l'apartat 1) sobre les taules normalitzades.
+5.a)
+5.b)
+5.c)
+5.d)
+5.e)
+5.f)

@@ -1,0 +1,70 @@
+diapo 16 estan instruccions basiques
+
+-->Per accedir al client mysql: 
+mysql -h ubiwan.epsevg.upc.edu -P 3306 -u est_b7533039 -p
+contra: dB.e7478896
+-->anar a la meua database:
+\u est_e7478896
+*******************************************************************
+Taula d'animals PETS
+
+-->Crear taula
+CREATE TABLE IF NOT EXISTS pets (name text, birthdate date, kind text, weight int);
+
+-->Insertar animals
+INSERT INTO pets VALUES('Kiro','2011-03-22','GOS',3);
+INSERT INTO pets VALUES('Mishi','2001-05-30','GAT',4);
+INSERT INTO pets VALUES('Mishu','2016-04-11','GAT',8);
+INSERT INTO pets VALUES('Tugui','2020-12-03','TORTUGA',1);
+INSERT INTO pets VALUES('Mini','2014-09-17','GOS',6);
+
+--> veure la taula 
+select * from pets;
+
+-->uns SELECT. Per ex. per comptar animals de cada tipus
+select name from pets where kind='GOS';
+
+
+-->un UPDATE per actualitzar el pes; Augment d'1kg a tots els animals
+update pets set weight = weight + 1;
+
+-->un DELETE per eliminar un que ha passat a millor vida
+delete from pets where name='Kiro';
+
+-->Canviar un tipus d'un animal
+ update pets set kind = case 
+       when kind='GOS'and name='Tugui' then 'TORTUGA'
+       else kind
+       end;
+
+-->un CREATE VIEW. . . amb el pes mitj`a segons el tipus de mascota: Gat 5.45, Gos 40.5
+create view pets_v as select kind, avg(weight) from pets group by kind;
+
+-->uns SELECT sobre la vista
+select * from pets_v;
+
+-->un DROP VIEW. Elimina la vista
+drop view pets_v;
+
+-->un CREATE VIEW. . . amb el nom i edat (anys) de cada
+mascota: Gina 6.0493, Momo 7.7096, Mica 1.6274
+create view pets_n as select name, timestampdiff(year, birthdate, now()) AS age from pets; // no em surten els decimals
+
+-->Insertar valors a una columna sense relacio en les files:
+insert into pets (birthdate) values ('2011-03-22'), ('2001-05-30'), ('2016-04-11'), ('2020-12-03');
+
+-->Canviar el tipus d'una columna:
+ alter table pets modify column weight float;
+ 
+-->Insertar una columna:
+alter table pets add birthdate date;
+
+-->Eliminar una columna:
+alter table pets drop column birthdate;
+
+-->Renombrar la taula:
+alter table pets rename to oliwis;
+
+-->Renombrar una columna:
+alter table pets change column kind tipo text;
+
