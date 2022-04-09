@@ -1,5 +1,6 @@
 sudo su
 scp b7533039@ahto.epsevg.upc.edu:/home/public/dabd/02accounts/accounts.txt /mnt/c/Users/UX431F/Desktop/DABD/Lab1
+scp /home/public/dabd/05mysql_php/crud-php-mysql-simple-inicial/* .     --> en el directorio donde estoy
 
 sqlite:
 	sqlite
@@ -8,9 +9,30 @@ sqlite:
 ssh b7533039@ubiwan.epsevg.upc.edu
 
 mysql -u est_b7533039 -p							//conectar mysql
+
 ubiwan > mysql -u est_b7533039 -p est_b7533039 < accounts.sql    //importar base de datos
+use database_name;			//para selecionar una database
 
 ubiwan > psql -U est_b7533039 est_b7533039
-
+para listar tablas en postgre: \dt
 
 para conectarte a otra data base d eotra persona : \c est_d9427261
+
+http://ubiwan.epsevg.upc.es/~b7533039
+
+
+
+
+
+CREATE TABLE `prueba`.`login` (
+  `id_login` INT NOT NULL,
+  `username` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_login`));
+
+
+
+To connect to mysql localhost:
+sudo service mysql start
+sudo su
+mysql -u fatin -p		(password:ptin2022)

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS accounts (acc_id int, type char(1), balance real, owner varchar(40), owner_id int, phone int, address varchar(100));
+CREATE TABLE IF NOT EXISTS accounts (acc_id bigint, type char(1), balance double, owner varchar(40), owner_id int, phone int, address varchar(100));
 
 INSERT INTO accounts VALUES(161320011440,'P',1763.68,'Tomé Cecial',6463525,223242,'Camino de Criptana 2, Argamasilla');
 INSERT INTO accounts VALUES(161320011440,'P',1763.68,'Sancho Panza',6532345,222333,'Corrales s/n, Argamasilla');
@@ -63,3 +63,15 @@ INSERT INTO accounts VALUES(104444810018,'C',8510.36,'Ginés de Pasamonte',44553
 INSERT INTO accounts VALUES(104444810018,'C',8510.36,'Caballero del Verde Gabán',6677345,252627,'Solares de Miranda s/n, Villarejo de Fuentes');
 INSERT INTO accounts VALUES(119774916201,'C',9818.59,'Alonso López',6656223,292827,'Camino Alcobendas 10, Baeza');
 INSERT INTO accounts VALUES(119774916201,'C',9818.59,'Pedro Alonso',6564321,223344,'Molinos 2, Argamasilla');
+
+
+CREATE TABLE IF NOT EXISTS comptes (acc_id bigint not null primary key, type char(1), balance double);
+CREATE TABLE IF NOT EXISTS adreces (address varchar(100) not null primary key, phone int unique key);
+CREATE TABLE IF NOT EXISTS titulars (owner_id int not null primary key, address varchar(100) not null references adreces on update cascade on delete restrict);
+CREATE TABLE IF NOT EXISTS contractes (owner varchar(40) not null, acc_id bigint not null references comptes on update cascade on delete cascade, owner_id int not null references titular on update cascade on delete cascade, primary key(acc_id, owner_id));
+
+
+INSERT INTO adreces SELECT DISTINCT address,phone FROM accounts;
+INSERT INTO comptes SELECT DISTINCT acc_id,type,balance FROM accounts;
+INSERT INTO titulars SELECT DISTINCT owner_id,address FROM accounts;
+INSERT INTO contractes SELECT DISTINCT owner,acc_id,owner_id FROM accounts;
